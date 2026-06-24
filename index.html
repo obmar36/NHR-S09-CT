@@ -4,9 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#08111f" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
   <meta name="description" content="S09-CT 太陽能發電與電流異常監測管理系統" />
   <title>S09-CT 太陽能監測管理平台</title>
   <link rel="icon" href="assets/NHR_Logo.png" />
+  <link rel="apple-touch-icon" href="assets/NHR_Logo.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -38,7 +44,7 @@
           <span class="status-dot status-ok"></span>
           <div><strong>資料服務正常</strong><small>最後同步 <span id="side-last-sync">剛剛</span></small></div>
         </div>
-        <div class="version">S09-CT Portal · Demo v1.0</div>
+        <div class="version">S09-CT Portal · RWD Demo v1.2</div>
       </div>
     </aside>
 
@@ -47,7 +53,7 @@
     <main class="workspace">
       <header class="topbar">
         <div class="topbar-left">
-          <button class="icon-btn mobile-menu" id="mobile-menu" aria-label="開啟選單">☰</button>
+          <button class="icon-btn mobile-menu" id="mobile-menu" aria-label="開啟選單" aria-controls="sidebar" aria-expanded="false">☰</button>
           <div>
             <div class="eyebrow" id="page-eyebrow">SOLAR OPERATIONS</div>
             <h1 id="page-title">戰情總覽</h1>
@@ -59,10 +65,11 @@
             <span>管理範圍</span>
             <select id="global-site-filter">
               <option value="all">全部場站</option>
-              <option value="STN-01">台南鹽田光電站</option>
-              <option value="STN-02">嘉義民雄光電站</option>
-              <option value="STN-03">屏東林邊光電站</option>
-              <option value="STN-04">彰化芳苑光電站</option>
+              <option value="STN-01">西湖服務區</option>
+              <option value="STN-02">泰安服務區</option>
+              <option value="STN-03">清水服務區</option>
+              <option value="STN-04">西螺服務區</option>
+              <option value="STN-05">南投服務區</option>
             </select>
           </label>
           <button class="icon-btn notification-btn" id="notification-btn" aria-label="通知">🔔<b>4</b></button>
@@ -70,9 +77,33 @@
         </div>
       </header>
 
+      <div class="mobile-context-bar" aria-label="行動版快速篩選">
+        <label class="mobile-site-select">
+          <span class="sr-only">管理範圍</span>
+          <select id="mobile-site-filter" aria-label="管理範圍">
+            <option value="all">全部場站</option>
+            <option value="STN-01">西湖服務區</option>
+            <option value="STN-02">泰安服務區</option>
+            <option value="STN-03">清水服務區</option>
+            <option value="STN-04">西螺服務區</option>
+            <option value="STN-05">南投服務區</option>
+          </select>
+        </label>
+        <span class="mobile-sync"><i class="status-dot status-ok"></i><span id="mobile-last-sync">即時資料</span></span>
+        <button class="mobile-refresh" id="mobile-refresh" type="button" aria-label="重新整理資料">↻</button>
+      </div>
+
       <section class="content" id="page-content" aria-live="polite"></section>
     </main>
   </div>
+
+  <nav class="mobile-bottom-nav" aria-label="行動版主要功能">
+    <a href="#/dashboard" data-route="dashboard" class="mobile-nav-item active"><span>◫</span><small>總覽</small></a>
+    <a href="#/sites" data-route="sites" class="mobile-nav-item"><span>⌖</span><small>場站</small></a>
+    <a href="#/current" data-route="current" class="mobile-nav-item"><span>∿</span><small>電流</small></a>
+    <a href="#/alerts" data-route="alerts" class="mobile-nav-item mobile-alert-item"><span>!</span><small>告警</small><b id="mobile-alert-count">4</b></a>
+    <button type="button" class="mobile-nav-item" id="mobile-more" aria-label="開啟完整選單"><span>☰</span><small>更多</small></button>
+  </nav>
 
   <div class="toast-container" id="toast-container"></div>
   <div class="modal-root" id="modal-root"></div>

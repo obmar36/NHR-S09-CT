@@ -1,56 +1,59 @@
-# S09-CT 太陽能發電與電流異常監測管理系統
+# S09-CT 太陽能監測管理平台｜服務區展示版 太陽能監測管理平台 — Vercel RWD 版
 
-可直接上傳 Vercel 的純前端版本。預設使用內建模擬資料，不需要建置指令、不需要 API Key。
+此版本可直接部署至 Vercel，並針對桌機、平板與手機完成 RWD 調整。
+
+## 行動版重點
+
+- 手機底部快捷導覽：總覽、場站、電流、告警與完整選單。
+- 手機專用場站篩選列與一鍵重新整理。
+- 側邊選單改為行動裝置抽屜式操作。
+- KPI、場站卡、電流卡、告警與設定表單自動重排。
+- 表格支援橫向滑動，首欄固定，方便查閱場站與裝置名稱。
+- 圖表、地圖、Modal、Toast 與安全區域適配 iPhone / Android。
+- 支援瀏覽器「加入主畫面」的 Web App manifest。
+- 保留桌機版完整戰情室資訊架構與功能。
 
 ## Vercel 部署
 
-### 方法 A：直接上傳
-1. 登入 Vercel。
-2. 建立新專案，選擇 Deploy without Git / Upload。
-3. 上傳本資料夾內的全部檔案，或直接上傳 `S09-CT_Vercel_Deploy.zip`。
-4. Framework Preset 選擇 `Other`。
-5. Build Command、Output Directory 留空後部署。
+1. 解壓縮 ZIP。
+2. 將整個資料夾上傳至 Vercel，或推送到 GitHub 後匯入。
+3. Framework Preset 選擇 `Other`。
+4. Build Command 留空。
+5. Output Directory 留空。
+6. 按下 Deploy。
 
-### 方法 B：GitHub
-1. 將本資料夾推送至 GitHub repository。
-2. 在 Vercel Import repository。
-3. Framework Preset 選擇 `Other`，不需 Build Command。
+## 正式 API 串接
 
-## 專案結構
+編輯 `config.js`：
 
-- `index.html`：系統入口。
-- `styles.css`：完整 RWD 介面樣式。
-- `data.js`：展示用場站、設備、電流及告警資料。
-- `config.js`：執行模式、API 位址、更新週期及地圖設定。
-- `app.js`：頁面路由、圖表、地圖、互動與 CSV 匯出。
-- `assets/NHR_Logo.png`：NHR Logo。
-- `vercel.json`：Vercel 靜態網站安全標頭。
+```js
+window.S09CT_CONFIG = {
+  mode: "api",
+  apiBaseUrl: "https://your-api-domain.com",
+  refreshSeconds: 30
+};
+```
 
-## 目前功能
+系統會讀取：
 
-- 戰情總覽：總功率、今日發電、目標達成率、預估損失、在線場站及嚴重告警。
-- 場站監控：地圖、場站卡片、績效排行與下鑽。
-- 發電分析：實際／預期發電、日照、七日趨勢及場站比較。
-- 電流監控：L1／L2／L3、電流不平衡率、歷史曲線及通道狀態。
-- 告警中心：告警篩選、確認、指派、處理中及結案狀態。
-- 裝置診斷：通訊、訊號、韌體、資料完整率及最後回報。
-- 報表與 ESG：發電量、CO₂ 減排、收益估算、CSV 匯出。
-- 系統設定：告警門檻、電價、排放係數及資料來源分類。
+```text
+{apiBaseUrl}/snapshot
+```
 
-## 串接真實後端
+若 API 失敗，系統會自動回退至展示資料。
 
-1. 在 `config.js` 將 `mode` 改為 `api`。
-2. 設定 `apiBaseUrl`。
-3. 系統會讀取 `${apiBaseUrl}/snapshot`，回傳結構需與 `data.js` 相同。
-4. 若正式 API 欄位不同，可在 `app.js` 的 `bootstrap()` 中加入欄位映射。
-5. API 無法連線時會自動退回展示資料，避免前台空白。
+## 建議測試尺寸
 
-正式串接前需由工程端確認：
-- S09-CT Payload 與通道定義。
-- 電壓、功率、發電量及日照資料來源。
-- 告警門檻與持續時間。
-- 場站、逆變器、配電盤、裝置及 CT 通道之間的關聯。
+- 手機：360 × 800、390 × 844、430 × 932
+- 平板：768 × 1024、820 × 1180
+- 桌機：1366 × 768、1920 × 1080
 
-## 外部資源
 
-頁面使用 CDN 載入 Chart.js 與 Leaflet，部署環境需可連線至 jsDelivr。地圖使用 CARTO / OpenStreetMap 圖磚，不需要 Token。
+## 服務區模擬資料版本
+
+本版本已將模擬場站更新為：西湖服務區、泰安服務區、清水服務區、西螺服務區、南投服務區；並同步調整篩選選單、告警、裝置代碼與地圖標記。
+
+
+## v1.2 更新
+- 修正左上 NHR Logo 的透明留白、顯示比例與尺寸。
+- 移除 Logo 白色方框，改為適合深色介面的橫式品牌顯示。

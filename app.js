@@ -10,7 +10,7 @@
     charts: [],
     map: null,
     refreshTimer: null,
-    selectedDeviceId: "S09CT-PD03-INV02",
+    selectedDeviceId: "S09CT-QS03-INV02",
     alertFilter: { severity: "all", status: "open", query: "" }
   };
 
@@ -104,17 +104,33 @@
     return { sites, totalCapacity, power, today, expected, target, loss, online };
   }
 
-  function setupShell() {
-    $("#global-site-filter").value = state.siteFilter;
-    $("#global-site-filter").addEventListener("change", e => {
-      state.siteFilter = e.target.value;
-      renderRoute();
+  function syncSiteFilters() {
+    const desktop = $("#global-site-filter");
+    const mobile = $("#mobile-site-filter");
+    if (desktop) desktop.value = state.siteFilter;
+    if (mobile) mobile.value = state.siteFilter;
+  }
+
+  function setSiteFilter(value, notify = true) {
+    state.siteFilter = value || "all";
+    syncSiteFilters();
+    renderRoute();
+    if (notify) {
       showToast("篩選條件已更新", state.siteFilter === "all" ? "目前顯示全部場站。" : `目前僅顯示 ${siteById(state.siteFilter)?.name || state.siteFilter}。`);
+    }
+  }
+
+  function setupShell() {
+    syncSiteFilters();
+    [$("#global-site-filter"), $("#mobile-site-filter")].filter(Boolean).forEach(select => {
+      select.addEventListener("change", e => setSiteFilter(e.target.value));
     });
 
     $("#mobile-menu").addEventListener("click", openSidebar);
+    $("#mobile-more").addEventListener("click", openSidebar);
     $("#sidebar-close").addEventListener("click", closeSidebar);
     $("#sidebar-backdrop").addEventListener("click", closeSidebar);
+    $("#mobile-refresh").addEventListener("click", refreshData);
     $("#notification-btn").addEventListener("click", () => {
       location.hash = "#/alerts";
     });
@@ -122,6 +138,9 @@
     window.addEventListener("hashchange", handleRoute);
     window.addEventListener("resize", () => {
       if (window.innerWidth > 860) closeSidebar();
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") { closeSidebar(); closeModal(); }
     });
 
     updateAlertCounts();
@@ -132,10 +151,14 @@
   function openSidebar() {
     $("#sidebar").classList.add("open");
     $("#sidebar-backdrop").classList.add("show");
+    $("#mobile-menu").setAttribute("aria-expanded", "true");
+    document.body.classList.add("nav-open");
   }
   function closeSidebar() {
     $("#sidebar").classList.remove("open");
     $("#sidebar-backdrop").classList.remove("show");
+    $("#mobile-menu").setAttribute("aria-expanded", "false");
+    document.body.classList.remove("nav-open");
   }
 
   function handleRoute() {
@@ -150,7 +173,8 @@
     const [eyebrow, title] = routeMeta[state.route];
     $("#page-eyebrow").textContent = eyebrow;
     $("#page-title").textContent = title;
-    $$(".nav-item").forEach(el => el.classList.toggle("active", el.dataset.route === state.route));
+    $$('[data-route]').forEach(el => el.classList.toggle("active", el.dataset.route === state.route));
+    document.title = `${title}｜S09-CT 太陽能監測管理平台`;
     const content = $("#page-content");
     content.innerHTML = `<div class="loading"></div>`;
 
@@ -746,7 +770,7 @@
       </div>
       <div class="modal-footer"><button class="btn" data-modal-close>關閉</button><button class="btn btn-primary" data-modal-close id="site-filter-button">僅查看此場站</button></div>
     `);
-    $("#site-filter-button").addEventListener("click", () => { state.siteFilter=id; $("#global-site-filter").value=id; renderRoute(); });
+    $("#site-filter-button").addEventListener("click", () => setSiteFilter(id, false));
   }
 
   function openModal(html) {
@@ -775,6 +799,8 @@
     const count = state.data.alerts.filter(a => a.status !== "closed").length;
     const navCount = $("#nav-alert-count");
     if (navCount) navCount.textContent = count;
+    const mobileCount = $("#mobile-alert-count");
+    if (mobileCount) mobileCount.textContent = count;
     const bell = $("#notification-btn b");
     if (bell) bell.textContent = count;
   }
@@ -786,6 +812,8 @@
     });
     state.data.generatedAt = new Date().toISOString();
     $("#side-last-sync").textContent = "剛剛";
+    const mobileSync = $("#mobile-last-sync");
+    if (mobileSync) mobileSync.textContent = "剛剛更新";
     renderRoute();
     showToast("資料已更新", "已重新整理場站、裝置與告警資料。", "success");
   }
@@ -795,6 +823,8 @@
     const seconds = Number(CONFIG.refreshSeconds || 30);
     state.refreshTimer = setInterval(() => {
       $("#side-last-sync").textContent = "剛剛";
+      const mobileSync = $("#mobile-last-sync");
+      if (mobileSync) mobileSync.textContent = "即時資料";
     }, Math.max(10, seconds) * 1000);
   }
 
