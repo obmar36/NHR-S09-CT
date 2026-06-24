@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08111f" />
+  <meta name="description" content="S09-CT 太陽能發電與電流異常監測管理系統" />
+  <title>S09-CT 太陽能監測管理平台</title>
+  <link rel="icon" href="assets/NHR_Logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img src="assets/NHR_Logo.png" alt="NHR" class="brand-logo" />
+        <div class="brand-copy">
+          <strong>S09-CT</strong>
+          <span>Solar Monitor</span>
+        </div>
+        <button class="icon-btn sidebar-close" id="sidebar-close" aria-label="關閉選單">×</button>
+      </div>
+
+      <nav class="nav" id="main-nav" aria-label="主要功能">
+        <a href="#/dashboard" data-route="dashboard" class="nav-item active"><span class="nav-icon">◫</span><span>戰情總覽</span></a>
+        <a href="#/sites" data-route="sites" class="nav-item"><span class="nav-icon">⌖</span><span>場站監控</span></a>
+        <a href="#/generation" data-route="generation" class="nav-item"><span class="nav-icon">⌁</span><span>發電分析</span></a>
+        <a href="#/current" data-route="current" class="nav-item"><span class="nav-icon">∿</span><span>電流監控</span></a>
+        <a href="#/alerts" data-route="alerts" class="nav-item"><span class="nav-icon">!</span><span>告警中心</span><b class="nav-count" id="nav-alert-count">4</b></a>
+        <a href="#/devices" data-route="devices" class="nav-item"><span class="nav-icon">▣</span><span>裝置診斷</span></a>
+        <a href="#/reports" data-route="reports" class="nav-item"><span class="nav-icon">▤</span><span>報表與 ESG</span></a>
+        <a href="#/settings" data-route="settings" class="nav-item"><span class="nav-icon">⚙</span><span>系統設定</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-health">
+          <span class="status-dot status-ok"></span>
+          <div><strong>資料服務正常</strong><small>最後同步 <span id="side-last-sync">剛剛</span></small></div>
+        </div>
+        <div class="version">S09-CT Portal · Demo v1.0</div>
+      </div>
+    </aside>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn mobile-menu" id="mobile-menu" aria-label="開啟選單">☰</button>
+          <div>
+            <div class="eyebrow" id="page-eyebrow">SOLAR OPERATIONS</div>
+            <h1 id="page-title">戰情總覽</h1>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+          <label class="compact-field site-switcher">
+            <span>管理範圍</span>
+            <select id="global-site-filter">
+              <option value="all">全部場站</option>
+              <option value="STN-01">台南鹽田光電站</option>
+              <option value="STN-02">嘉義民雄光電站</option>
+              <option value="STN-03">屏東林邊光電站</option>
+              <option value="STN-04">彰化芳苑光電站</option>
+            </select>
+          </label>
+          <button class="icon-btn notification-btn" id="notification-btn" aria-label="通知">🔔<b>4</b></button>
+          <div class="user-chip"><span class="avatar">OM</span><div><strong>Omar</strong><small>System Admin</small></div></div>
+        </div>
+      </header>
+
+      <section class="content" id="page-content" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <div class="modal-root" id="modal-root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
